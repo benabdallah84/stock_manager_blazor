@@ -1,0 +1,131 @@
+﻿@page "/operation/details"
+@using comuneProject.Shared.Models
+
+@inject HttpClient Http
+<h1>Operation Details</h1>
+<p>Blazor CRUD operation</p>
+<div class="row">
+    <div class="col-md-6">
+        <a href='/operation/add' class="btn btn-primary" role="button">
+            <i class="fas fa-operation-plus"></i>
+            Ajouté une operation
+        </a>
+    </div>
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Recherche par titre d'operation"
+               @bind="SearchString" @bind:event="oninput" @onkeyup="Filteroperation" />
+        @if (SearchString.Length > 0)
+        {
+            <div class="input-group-append">
+                <button class="btn btn-danger" @onclick="ResetSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+@if (operationList == null)
+{
+    <SfSpinner Visible="true" Label="Loading Data ..." Size="50"></SfSpinner>
+    @*<div class="spinner"></div>*@
+}
+else
+{
+    <SfGrid DataSource="@operationList" AllowPaging="true" AllowSorting="true">
+        @*AllowMultiSorting="false"*@
+        <GridSortSettings AllowUnsort="false">
+            <GridSortColumns>
+                <GridSortColumn Field="titre" Direction="SortDirection.Descending"></GridSortColumn>
+            </GridSortColumns>
+        </GridSortSettings>
+        <GridPageSettings PageSize="5" PageSizes="true" PageCount="3"></GridPageSettings>
+        <GridColumns>
+            @*<GridColumn Field="@nameof(@product.Id)" AllowSorting="false" HeaderText="ID"></GridColumn>*@
+            <GridColumn Field="@nameof(@operation.titre)" HeaderText="Type d'operation"></GridColumn>
+            <GridColumn Field="@nameof(@operation.Date)" HeaderText="Date d'operation"></GridColumn>
+           
+
+        </GridColumns>
+
+    </SfGrid>
+}
+@*@if (operationList == null)
+    {
+    <div class="spinner"></div>
+    }
+    else
+    {
+        <table class="table table-striped align-middle table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th hidden>ID</th>
+                    <th>Type d'operation</th>
+                    <th>Date d'operation</th>
+                    <th hidden>beneficieId</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var operation in operationList)
+                {
+
+                <tr>
+                    <td hidden>@operation.Id</td>
+                    <td>@operation.titre</td>
+                    <td>@operation.Date.Value.ToString("dd/MM/yyyy")</td>
+                    <td hidden>@operation.beneficieId</td>
+
+                    <td>
+                        <a href='/operation/edit/@operation.Id' class="btn btn-outline-dark" role="button">
+                            Modifié
+                        </a>
+                        <a href='/operation/delete/@operation.Id' class="btn btn-outline-danger" role="button">
+                            Supprimé
+                        </a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+
+        </table>
+    }*@
+@code {
+    protected List<operation> operationList = null;
+    protected List<operation> searchoperationData = new();
+    protected operation operation = new();
+    protected string SearchString { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        await Getoperation();
+    }
+    protected async Task Getoperation()
+    {
+        operationList = await Http.GetFromJsonAsync<List<operation>>("api/operations");
+        searchoperationData = operationList;
+    }
+    protected void Filteroperation()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            operationList = searchoperationData
+                .Where(x => x.titre.IndexOf(SearchString, StringComparison.OrdinalIgnoreCase) != -1)
+                .ToList();
+        }
+        else
+        {
+            operationList = searchoperationData;
+        }
+    }
+    protected void DeleteConfirm(Guid operationID)
+    {
+        operation = operationList.FirstOrDefault(x => x.Id == operationID);
+    }
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        operationList = searchoperationData;
+    }
+}

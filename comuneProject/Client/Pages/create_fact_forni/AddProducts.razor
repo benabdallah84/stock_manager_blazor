@@ -1,0 +1,94 @@
+﻿@page "/fourni_fact/add_product"
+@using comuneProject.Shared.Models;
+@inject HttpClient Http
+@inherits ComponentBase
+@inject NavigationManager NavigationManager
+
+
+<h3>AddProducts</h3>
+
+
+<div>
+    <EditForm Model="@product" OnValidSubmit="SaveMultiProducts">
+        <DataAnnotationsValidator />
+        <div class="row col-lg-12">
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <label for="Designation" class="form-label">Désignation</label>
+                    <div>
+                        <InputText class="form-control" @bind-Value="product.Designation" />
+                    </div>
+                    <ValidationMessage For="@(() => product.Designation)" />
+                </div>
+                <div class="mb-3">
+                    <label for="productType" class="form-label">Type de produit</label>
+                    <div>
+                        <InputSelect class="form-control" @bind-Value="product.productType">
+                            <option value="0">@categories.TypeProduit.Consomable</option>
+                            <option value="1">@categories.TypeProduit.Static</option>
+                        </InputSelect>
+                    </div>
+                    <ValidationMessage For="@(() => product.productType)" />
+                </div>
+                <div class="mb-3">
+                    <label for="Quantity" class="form-label">Quantity</label>
+                    <div>
+                        <InputNumber class="form-control" @bind-Value="getQuantity" />
+                    </div>
+                    <ValidationMessage For="@(() => product.Quantity)" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <label for="Matricul" class="form-label">Matricule</label>
+                    <div>
+                        <InputText class="form-control" @bind-Value="getMatricul" />
+                    </div>
+                    <ValidationMessage For="@(() => product.Matricul)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Prix_unitaire" class="form-label">Prix unitaire</label>
+                    <div>
+                        <InputNumber class="form-control" @bind-Value="product.Prix_unitaire" />
+                    </div>
+                    <ValidationMessage For="@(() => product.Prix_unitaire)" />
+                </div>
+                <div class="mb-3">
+                    <label for="Note" class="form-label">Note</label>
+                    <div>
+                        <InputText class="form-control" @bind-Value="product.Note" />
+                    </div>
+                    <ValidationMessage For="@(() => product.Note)" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Sauvgardé</button>
+            <button class="btn btn-light" @onclick="Cancel">Annulé</button>
+        </div>
+    </EditForm>
+</div>
+
+
+@if (productList == null)
+{
+    Console.WriteLine("Entred in case one");
+}
+else
+{
+    Console.WriteLine("Entred in case two");
+    <SfGrid DataSource="@productList">
+        <GridColumns>
+            <GridColumn Field=@nameof(product.Designation) HeaderText="Désignation"></GridColumn>
+            <GridColumn Field=@nameof(product.productType) HeaderText="Type  de produit"></GridColumn>
+            <GridColumn Field=@nameof(product.Quantity) HeaderText="Quantity"></GridColumn>
+            <GridColumn Field=@nameof(product.Matricul) HeaderText="Matricule"></GridColumn>
+            <GridColumn Field=@nameof(product.Prix_unitaire) HeaderText="prix unitaire"></GridColumn>
+            <GridColumn Field=@nameof(product.Note) HeaderText="Remarque"></GridColumn>
+
+        </GridColumns>
+
+    </SfGrid>
+}
+

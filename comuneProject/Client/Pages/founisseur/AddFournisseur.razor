@@ -1,0 +1,91 @@
+﻿@page "/fournisseur/edit/{fournisseurId:guid}"
+@page "/fournisseur/add"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h1>Ajouté fournisseur</h1>
+<hr />
+<EditForm Model="@fournisseur" OnValidSubmit="Savefournisseur">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="Name" class="form-label">Nom de fournisseur</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="fournisseur.Name" />
+        </div>
+        <ValidationMessage For="@(() => fournisseur.Name)" />
+    </div>
+    <div class="mb-3">
+        <label for="Designation" class="form-label">Désignation</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="fournisseur.Designation" />
+        </div>
+        <ValidationMessage For="@(() => fournisseur.Designation)" />
+    </div>
+    <div class="mb-3">
+        <label for="RC" class="form-label">Registre commerce</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="fournisseur.RC" />
+        </div>
+        <ValidationMessage For="@(() => fournisseur.RC)" />
+    </div>
+    <div class="mb-3">
+        <label for="MF" class="form-label">Matricule fiscal</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="fournisseur.MF" />
+        </div>
+        <ValidationMessage For="@(() => fournisseur.MF)" />
+    </div>
+    <div class="mb-3">
+        <label for="NA" class="form-label">N° d'article</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="fournisseur.NA" />
+        </div>
+        <ValidationMessage For="@(() => fournisseur.NA)" />
+    </div>
+    <div class="mb-3">
+        <label for="Compte" class="form-label">Compte</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="fournisseur.Compte" />
+        </div>
+        <ValidationMessage For="@(() => fournisseur.Compte)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Sauvgardé</button>
+        <button class="btn btn-light" @onclick="Cancel">Annulé</button>
+    </div>
+
+</EditForm>
+@code {
+    [Parameter]
+    public Guid fournisseurId { get; set; }
+    protected string Title = "Add";
+    protected fournisseur fournisseur = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (fournisseurId != Guid.Empty)
+        {
+            Title = "Edit";
+            fournisseur = await Http.GetFromJsonAsync<fournisseur>("api/fournisseurs/" + fournisseurId);
+
+        }
+    }
+    protected async Task Savefournisseur()
+    {
+
+        if (fournisseur.Id != Guid.Empty)
+        {
+            await Http.PutAsJsonAsync("api/fournisseurs" + fournisseurId, fournisseur);
+
+        }
+        else
+        {
+            await Http.PostAsJsonAsync("api/fournisseurs", fournisseur);
+        }
+
+        Cancel();
+    }
+    public void Cancel()
+    {
+        NavigationManager.NavigateTo("/fournisseur/details");
+    }
+}

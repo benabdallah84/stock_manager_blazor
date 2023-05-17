@@ -1,0 +1,64 @@
+﻿@page "/fournisseur/delete/{fournisseurId:guid}"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h2>Supprimé un founisseur</h2>
+<br />
+<div class="form-group">
+    <h4>Do you want to delete this fournisseur?</h4>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Name de fournisseur</td>
+                <td>@fournisseur.Name</td>
+            </tr>
+            <tr>
+                <td>Désignation</td>
+                <td>@fournisseur.Designation</td>
+            </tr>
+            <tr>
+                <td>Registre de commerce</td>
+                <td>@fournisseur.RC</td>
+            </tr>
+            <tr>
+                <td>Matricule fiscal</td>
+                <td>@fournisseur.MF</td>
+            </tr>
+            <tr>
+                <td>N° d'article</td>
+                <td>@fournisseur.NA</td>
+            </tr>
+            <tr>
+                <td>Compte</td>
+                <td>@fournisseur.Compte</td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+<div class="form-group">
+
+    <input type="submit" value="Supprimé" @onclick="(async () => await Removefournisseur(fournisseur.Id))" class="btn btn-danger" />
+    <input type="submit" value="Annulé" @onclick="(() => Cancel())" class="btn btn-warning" />
+</div>
+@code {
+    [Parameter]
+    public Guid fournisseurId { get; set; }
+
+    fournisseur fournisseur = new fournisseur();
+    protected override async Task OnInitializedAsync()
+    {
+        fournisseur = await Http.GetFromJsonAsync<fournisseur>("/api/fournisseurs/" + fournisseurId);
+    }
+    protected async Task Removefournisseur(Guid fournisseurID)
+    {
+        await Http.DeleteAsync("api/fournisseurs/" + fournisseurID);
+        NavigationManager.NavigateTo("/fournisseur/details");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/fournisseur/details");
+    }
+
+}
+

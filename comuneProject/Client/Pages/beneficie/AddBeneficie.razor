@@ -1,0 +1,64 @@
+﻿@page "/beneficie/edit/{beneficieId:guid}"
+@page "/beneficie/add"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h1>Ajouté un beneficie</h1>
+<hr />
+<EditForm Model="@beneficie" OnValidSubmit="Savebeneficie">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="Num_beneficie" class="form-label">Nom de beneficie</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="beneficie.Name" />
+        </div>
+        <ValidationMessage For="@(() => beneficie.Name)" />
+    </div>
+    <div class="mb-3">
+        <label for="Post" class="form-label">Occupation</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="beneficie.Post" />
+        </div>
+        <ValidationMessage For="@(() => beneficie.Post)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Sauvgardé</button>
+        <button class="btn btn-light" @onclick="Cancel">Annulé</button>
+    </div>
+
+
+</EditForm>
+@code {
+    [Parameter]
+    public Guid beneficieId { get; set; }
+    protected string Title = "Add";
+    protected beneficie beneficie = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (beneficieId != Guid.Empty)
+        {
+            Title = "Edit";
+            beneficie = await Http.GetFromJsonAsync<beneficie>("api/beneficies/" + beneficieId);
+
+        }
+    }
+    protected async Task Savebeneficie()
+    {
+
+        if (beneficie.Id != Guid.Empty)
+        {
+            await Http.PutAsJsonAsync("api/beneficies" + beneficieId, beneficie);
+
+        }
+        else
+        {
+            await Http.PostAsJsonAsync("api/beneficies", beneficie);
+        }
+
+        Cancel();
+    }
+    public void Cancel()
+    {
+        NavigationManager.NavigateTo("/beneficie/details");
+    }
+}

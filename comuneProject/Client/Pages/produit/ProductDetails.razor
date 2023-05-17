@@ -1,0 +1,150 @@
+﻿@page "/produit/details"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject ProductService productService
+<h1>Product Details</h1>
+<p>Blazor CRUD operation</p>
+<div class="row">
+    <div class="col-md-6">
+        <a href='/produit/add' class="btn btn-primary" role="button">
+            <i class="fas fa-product-plus"></i>
+            Ajouté Produits
+        </a>
+    </div>
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Recherche par désignation"
+               @bind="SearchString" @bind:event="oninput" @onkeyup="Filterproduct" />
+        @if (SearchString.Length > 0)
+        {
+            <div class="input-group-append">
+                <button class="btn btn-danger" @onclick="ResetSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<br />
+@if (productList == null)
+{
+    <SfSpinner Visible="true" Label="Loading Data ..." Size="50"></SfSpinner>
+@*<div class="spinner"></div>*@
+}
+else
+{
+    <SfGrid DataSource="@productList" AllowPaging="true" AllowSorting="true">
+        @*AllowMultiSorting="false"*@
+        <SfDataManager></SfDataManager>
+        <GridSortSettings AllowUnsort="false">
+            <GridSortColumns>
+                <GridSortColumn Field="Matricul" Direction="SortDirection.Descending"></GridSortColumn>
+            </GridSortColumns>
+        </GridSortSettings>
+        <GridPageSettings PageSize="5" PageSizes="true" PageCount="3"></GridPageSettings>
+        <GridColumns>
+            @*<GridColumn Field="@nameof(@product.Id)" AllowSorting="false" HeaderText="ID"></GridColumn>*@
+            <GridColumn Field="@nameof(@product.Matricul)" HeaderText="Matricul"></GridColumn>
+            <GridColumn Field="@nameof(@product.Designation)" HeaderText="Désignation"></GridColumn>
+            <GridColumn Field="@nameof(@product.Quantity)" HeaderText="Quantity"></GridColumn>
+            <GridColumn Field="@nameof(@product.productType)" HeaderText="Type de produit"></GridColumn>
+            <GridColumn Field="@nameof(@product.Prix_unitaire)" HeaderText="Prix unitaire"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+}
+@*@if (productList == null)
+{
+
+    //<p><em>Loading...</em></p>
+    <div class="spinner"></div>
+}
+else
+{
+    <table class="table table-striped align-middle table-bordered">
+        <thead class="table-success">
+            <tr>
+                <th hidden>ID</th>
+                <th>Matricul</th>
+                <th>Désignation</th>
+                <th>Quantity</th>
+                <th>Type de produit</th>
+                <th>Prix unitaire</th>
+                <th hidden>facturesId</th>
+                <th hidden>beneficieId</th>
+                <th hidden>operationId</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in productList)
+            {
+                <tr>
+                    <td hidden>@product.Id</td>
+                    <td>@product.Matricul</td>
+                    <td>@product.Designation</td>
+                    <td>@product.Quantity</td>
+                    <td>@product.productType</td>
+                    <td>@product.Prix_unitaire</td>
+                    <td hidden>@product.facturesId</td>
+                    <td hidden>@product.beneficieId</td>
+                    <td hidden>@product.operationId</td>
+                    <td>
+                        <a href='/produit/edit/@product.Id' class="btn btn-outline-dark" role="button">
+                            Modifié
+                        </a>
+                        <a href='/produit/delete/@product.Id' class="btn btn-outline-danger" role="button">
+                            Supprimé
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}*@
+@code {
+    protected IEnumerable<product> productList = null;
+    protected IEnumerable<product> searchproductData = null;
+    protected product product = new();
+    protected string SearchString { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        //await Task.Run(LoadEmployees);
+
+        await Getproduct();
+    }
+    private void LoadEmployees()
+    {
+        System.Threading.Thread.Sleep(2000);
+
+    }
+    protected async Task Getproduct()
+    {
+        //productList = new();
+        // productList = await Http.GetFromJsonAsync<List<product>>("api/products");
+        productList = await productService.GetAll();
+
+        searchproductData = productList;
+
+    }
+    protected void Filterproduct()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            productList = searchproductData
+                .Where(x => x.Designation.IndexOf(SearchString, StringComparison.OrdinalIgnoreCase) != -1)
+                .ToList();
+        }
+        else
+        {
+            productList = searchproductData;
+        }
+    }
+    protected void DeleteConfirm(Guid productID)
+    {
+        product = productList.FirstOrDefault(x => x.Id == productID);
+    }
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        productList = searchproductData;
+    }
+}

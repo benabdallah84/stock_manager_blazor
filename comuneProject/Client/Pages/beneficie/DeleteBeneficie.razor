@@ -1,0 +1,47 @@
+﻿@page "/beneficie/delete/{beneficieId:guid}"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h2>Supprimé un bénéficie</h2>
+<br />
+<div class="form-group">
+    <h4>Do you want to delete this beneficie?</h4>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Nom de beneficie</td>
+                <td>@beneficie.Name</td>
+            </tr>
+            <tr>
+                <td>Occupation</td>
+                <td>@beneficie.Post</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="form-group">
+
+    <input type="submit" value="Supprimé" @onclick="(async () => await Removebeneficie(beneficie.Id))" class="btn btn-danger" />
+    <input type="submit" value="Annulé" @onclick="(() => Cancel())" class="btn btn-warning" />
+</div>
+@code {
+    [Parameter]
+    public Guid beneficieId { get; set; }
+
+    beneficie beneficie = new beneficie();
+    protected override async Task OnInitializedAsync()
+    {
+        beneficie = await Http.GetFromJsonAsync<beneficie>("/api/beneficies/" + beneficieId);
+    }
+    protected async Task Removebeneficie(Guid beneficieID)
+    {
+        await Http.DeleteAsync("api/beneficies/" + beneficieID);
+        NavigationManager.NavigateTo("/beneficie/details");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/beneficie/details");
+    }
+
+}
+

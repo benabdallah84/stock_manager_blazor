@@ -1,0 +1,140 @@
+﻿@page "/fournisseur/details"
+@using comuneProject.Shared.Models
+
+@inject HttpClient Http
+<h1>Fournisseur Details</h1>
+<p>Blazor CRUD operation</p>
+<div class="row">
+    <div class="col-md-6">
+        <a href='/fournisseur/add' class="btn btn-primary" role="button">
+            <i class="fas fa-fournisseur-plus"></i>
+            Ajouté un fournisseur
+        </a>
+    </div>
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Recherche par nom de fournisseur"
+               @bind="SearchString" @bind:event="oninput" @onkeyup="Filterfournisseur" />
+        @if (SearchString.Length > 0)
+        {
+            <div class="input-group-append">
+                <button class="btn btn-danger" @onclick="ResetSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+@if (fournisseurList == null)
+{
+    <SfSpinner Visible="true" Label="Loading Data ..." Size="50"></SfSpinner>
+    @*<div class="spinner"></div>*@
+}
+else
+{
+<SfGrid DataSource="@fournisseurList" AllowPaging="true" AllowSorting="true">
+    @*AllowMultiSorting="false"*@
+    <GridSortSettings AllowUnsort="false">
+        <GridSortColumns>
+            <GridSortColumn Field="Name" Direction="SortDirection.Descending"></GridSortColumn>
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridPageSettings PageSize="5" PageSizes="true" PageCount="3"></GridPageSettings>
+    <GridColumns>
+        @*<GridColumn Field="@nameof(@product.Id)" AllowSorting="false" HeaderText="ID"></GridColumn>*@
+        <GridColumn Field="@nameof(@fournisseur.Name)" HeaderText="Nom"></GridColumn>
+        <GridColumn Field="@nameof(@fournisseur.Designation)" HeaderText="Désignation"></GridColumn>
+        <GridColumn Field="@nameof(@fournisseur.RC)" HeaderText="Registre de commerce"></GridColumn>
+        <GridColumn Field="@nameof(@fournisseur.MF)" HeaderText="Matricule fiscale"></GridColumn>
+        <GridColumn Field="@nameof(@fournisseur.NA)" HeaderText="Némuro d'article"></GridColumn>
+        <GridColumn Field="@nameof(@fournisseur.Compte)" HeaderText="Compte"></GridColumn>
+
+    </GridColumns>
+    
+</SfGrid>
+}
+
+@*@if (fournisseurList == null)
+    {
+    <div class="spinner"></div>
+    }
+    else
+    {
+        <table class="table table-striped align-middle table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th hidden>ID</th>
+                    <th>Nom</th>
+                    <th>Désignation</th>
+                    <th>Registre de commerce</th>
+                    <th>Matricule fiscale</th>
+                    <th>Némuro d'article</th>
+                    <th>Compte</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fournisseur in fournisseurList)
+                {
+
+                    <tr>
+                        <td hidden>@fournisseur.Id</td>
+                        <td>@fournisseur.Name</td>
+                        <td>@fournisseur.Designation</td>
+                        <td>@fournisseur.RC</td>
+                        <td>@fournisseur.MF</td>
+                        <td>@fournisseur.NA</td>
+                        <td>@fournisseur.Compte</td>
+
+                        <td>
+                            <a href='/fournisseur/edit/@fournisseur.Id' class="btn btn-outline-dark" role="button">
+                                Modifié
+                            </a>
+                            <a href='/fournisseur/delete/@fournisseur.Id' class="btn btn-outline-danger" role="button">
+                                Supprimé
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }*@
+@code {
+    protected List<fournisseur> fournisseurList = null;
+    protected List<fournisseur> searchfournisseurData = new();
+    protected fournisseur fournisseur = new();
+    protected string SearchString { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        await Getfournisseur();
+    }
+    protected async Task Getfournisseur()
+    {
+        fournisseurList = await Http.GetFromJsonAsync<List<fournisseur>>("api/fournisseurs");
+        searchfournisseurData = fournisseurList;
+    }
+    protected void Filterfournisseur()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            fournisseurList = searchfournisseurData
+                .Where(x => x.Name.IndexOf(SearchString, StringComparison.OrdinalIgnoreCase) != -1)
+                .ToList();
+        }
+        else
+        {
+            fournisseurList = searchfournisseurData;
+        }
+    }
+    protected void DeleteConfirm(Guid fournisseurID)
+    {
+        fournisseur = fournisseurList.FirstOrDefault(x => x.Id == fournisseurID);
+    }
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        fournisseurList = searchfournisseurData;
+    }
+}

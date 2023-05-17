@@ -1,0 +1,70 @@
+﻿@page "/facture/edit/{factureId:guid}"
+@page "/facture/add"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h1>Ajouté Facture</h1>
+<hr />
+<EditForm Model="@facture" OnValidSubmit="Savefacture">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="Num_facture" class="form-label">N° de facture</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="facture.Num_facture" />
+        </div>
+        <ValidationMessage For="@(() => facture.Num_facture)" />
+    </div>
+    <div class="mb-3">
+        <label for="Designation" class="form-label">Désignation</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="facture.Designation" />
+        </div>
+        <ValidationMessage For="@(() => facture.Designation)" />
+    </div>
+    <div class="mb-3">
+        <label for="Date_facture" class="form-label">Date de facture</label>
+        <div class="col-md-4">
+            <InputDate class="form-control" @bind-Value="facture.Date_facture" />
+        </div>
+        <ValidationMessage For="@(() => facture.Date_facture)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Sauvgardé</button>
+        <button class="btn btn-light" @onclick="Cancel">Annulé</button>
+    </div>
+
+</EditForm>
+@code {
+    [Parameter]
+    public Guid factureId { get; set; }
+    protected string Title = "Add";
+    protected facture facture = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (factureId != Guid.Empty)
+        {
+            Title = "Edit";
+            facture = await Http.GetFromJsonAsync<facture>("api/factures/" + factureId);
+
+        }
+    }
+    protected async Task Savefacture()
+    {
+
+        if (facture.Id != Guid.Empty)
+        {
+            await Http.PutAsJsonAsync("api/factures" + factureId, facture);
+
+        }
+        else
+        {
+            await Http.PostAsJsonAsync("api/factures", facture);
+        }
+
+        Cancel();
+    }
+    public void Cancel()
+    {
+        NavigationManager.NavigateTo("/facture/details");
+    }
+}

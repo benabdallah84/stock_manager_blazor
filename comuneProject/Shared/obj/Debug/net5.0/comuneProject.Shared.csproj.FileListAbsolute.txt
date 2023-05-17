@@ -1,0 +1,12 @@
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\bin\Debug\net5.0\comuneProject.Shared.deps.json
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\bin\Debug\net5.0\comuneProject.Shared.dll
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\bin\Debug\net5.0\ref\comuneProject.Shared.dll
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\bin\Debug\net5.0\comuneProject.Shared.pdb
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\comuneProject.Shared.csproj.AssemblyReference.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\comuneProject.Shared.GeneratedMSBuildEditorConfig.editorconfig
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\comuneProject.Shared.AssemblyInfoInputs.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\comuneProject.Shared.AssemblyInfo.cs
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\comuneProject.Shared.csproj.CoreCompileInputs.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\comuneProject.Shared.dll
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\ref\comuneProject.Shared.dll
+E:\workflow\BlazorProject\comuneProject\comuneProject\Shared\obj\Debug\net5.0\comuneProject.Shared.pdb

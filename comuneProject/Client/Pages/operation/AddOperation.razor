@@ -1,0 +1,66 @@
+﻿@page "/operation/edit/{operationId:guid}"
+@page "/operation/add"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h1>Ajouté une operation</h1>
+<hr />
+<EditForm Model="@operation" OnValidSubmit="Saveoperation">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="titre" class="form-label">Type d'operation</label>
+        <div class="col-md-4">
+            <InputSelect class="form-control" @bind-Value="operation.titre">
+                <option value="0">@categories.TypeOperation.Décharge</option>
+                <option value="1">@categories.TypeOperation.Réstitution</option>
+            </InputSelect>
+        </div>
+        <ValidationMessage For="@(() => operation.titre)" />
+    </div>
+    <div class="mb-3">
+        <label for="Date" class="form-label">Date d'operation</label>
+        <div class="col-md-4">
+            <InputDate class="form-control" @bind-Value="operation.Date" />
+        </div>
+        <ValidationMessage For="@(() => operation.Date)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Sauvgardé</button>
+        <button class="btn btn-light" @onclick="Cancel">Annulé</button>
+    </div>
+
+</EditForm>
+@code {
+    [Parameter]
+    public Guid operationId { get; set; }
+    protected string Title = "Add";
+    protected operation operation = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (operationId != Guid.Empty)
+        {
+            Title = "Edit";
+            operation = await Http.GetFromJsonAsync<operation>("api/operations/" + operationId);
+
+        }
+    }
+    protected async Task Saveoperation()
+    {
+
+        if (operation.Id != Guid.Empty)
+        {
+            await Http.PutAsJsonAsync("api/operations" + operationId, operation);
+
+        }
+        else
+        {
+            await Http.PostAsJsonAsync("api/operations", operation);
+        }
+
+        Cancel();
+    }
+    public void Cancel()
+    {
+        NavigationManager.NavigateTo("/operation/details");
+    }
+}

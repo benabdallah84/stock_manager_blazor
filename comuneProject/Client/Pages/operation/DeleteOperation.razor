@@ -1,0 +1,49 @@
+﻿@page "/operation/delete/{operationId:guid}"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h2>Supprimé une operation</h2>
+<br />
+<div class="form-group">
+    <h4>Do you want to delete this operation?</h4>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Type d'operation'</td>
+                <td>@operation.titre</td>
+            </tr>
+            <tr>
+                <td>Date d'operation</td>
+                <td>@operation.Date</td>
+            </tr>
+            
+
+        </tbody>
+    </table>
+</div>
+<div class="form-group">
+
+    <input type="submit" value="Supprimé" @onclick="(async () => await Removeoperation(operation.Id))" class="btn btn-danger" />
+    <input type="submit" value="Annulé" @onclick="(() => Cancel())" class="btn btn-warning" />
+</div>
+@code {
+    [Parameter]
+    public Guid operationId { get; set; }
+
+    operation operation = new operation();
+    protected override async Task OnInitializedAsync()
+    {
+        operation = await Http.GetFromJsonAsync<operation>("/api/operations/" + operationId);
+    }
+    protected async Task Removeoperation(Guid operationID)
+    {
+        await Http.DeleteAsync("api/operations/" + operationID);
+        NavigationManager.NavigateTo("/operation/details");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/operation/details");
+    }
+
+}
+

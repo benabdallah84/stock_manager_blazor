@@ -1,0 +1,52 @@
+﻿@page "/facture/delete/{factureId:guid}"
+@using comuneProject.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+<h2>Supprimé un produit</h2>
+<br />
+<div class="form-group">
+    <h4>Do you want to delete this facture?</h4>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>N° facture</td>
+                <td>@facture.Num_facture</td>
+            </tr>
+            <tr>
+                <td>Désignation</td>
+                <td>@facture.Designation</td>
+            </tr>
+            <tr>
+                <td>Date de facture</td>
+                <td>@facture.Date_facture</td>
+            </tr>
+            
+        </tbody>
+    </table>
+</div>
+<div class="form-group">
+
+    <input type="submit" value="Supprimé" @onclick="(async () => await Removefacture(facture.Id))" class="btn btn-danger" />
+    <input type="submit" value="Annulé" @onclick="(() => Cancel())" class="btn btn-warning" />
+</div>
+@code {
+    [Parameter]
+    public Guid factureId { get; set; }
+
+    facture facture = new facture();
+    protected override async Task OnInitializedAsync()
+    {
+        facture = await Http.GetFromJsonAsync<facture>("/api/factures/" + factureId);
+    }
+    protected async Task Removefacture(Guid factureID)
+    {
+        await Http.DeleteAsync("api/factures/" + factureID);
+        NavigationManager.NavigateTo("/facture/details");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/facture/details");
+    }
+
+}
+

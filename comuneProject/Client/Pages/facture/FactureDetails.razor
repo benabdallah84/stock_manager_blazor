@@ -1,0 +1,133 @@
+﻿@page "/facture/details"
+@using comuneProject.Shared.Models
+
+@inject HttpClient Http
+<h1>Facture Details</h1>
+<p>Blazor CRUD operation</p>
+<div class="row">
+    <div class="col-md-6">
+        <a href='/facture/add' class="btn btn-primary" role="button">
+            <i class="fas fa-facture-plus"></i>
+            Ajouté une facture
+        </a>
+    </div>
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Recherche par désignation"
+               @bind="SearchString" @bind:event="oninput" @onkeyup="Filterfacture" />
+        @if (SearchString.Length > 0)
+        {
+            <div class="input-group-append">
+                <button class="btn btn-danger" @onclick="ResetSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+@if (factureList == null)
+{
+    <SfSpinner Visible="true" Label="Loading Data ..." Size="50"></SfSpinner>
+    @*<div class="spinner"></div>*@
+}
+else
+{
+    <SfGrid DataSource="@factureList" AllowPaging="true" AllowSorting="true">
+        @*AllowMultiSorting="false"*@
+        <GridSortSettings AllowUnsort="false">
+            <GridSortColumns>
+                <GridSortColumn Field="Designation" Direction="SortDirection.Descending"></GridSortColumn>
+            </GridSortColumns>
+        </GridSortSettings>
+        <GridPageSettings PageSize="5" PageSizes="true" PageCount="3"></GridPageSettings>
+        <GridColumns>
+            @*<GridColumn Field="@nameof(@product.Id)" AllowSorting="false" HeaderText="ID"></GridColumn>*@
+            <GridColumn Field="@nameof(@facture.Num_facture)" HeaderText="N° facture"></GridColumn>
+            <GridColumn Field="@nameof(@facture.Designation)" HeaderText="Désignation"></GridColumn>
+            <GridColumn Field="@nameof(@facture.Date_facture)" HeaderText="Date de facture"></GridColumn>
+            
+        </GridColumns>
+    </SfGrid>
+}
+@*@if (factureList == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <table class="table table-striped align-middle table-bordered">
+        <thead class="table-success">
+            <tr>
+                <th hidden>ID</th>
+                <th>N° facture</th>
+                <th>Désignation</th>
+                <th>Date de facture</th>
+                <th hidden>FournisseurId</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var facture in factureList)
+            {
+
+                <tr>
+                    <td hidden>@facture.Id</td>
+                    <td>@facture.Num_facture</td>
+                    <td>@facture.Designation</td>
+
+                    <td>@facture.Date_facture</td>
+                    <td hidden>@facture.FournisseurId</td>
+
+                    <td>
+                        <a href='/facture/edit/@facture.Id' class="btn btn-outline-dark" role="button">
+                            Modifié
+                        </a>
+                        <a href='/facture/delete/@facture.Id' class="btn btn-outline-danger" role="button">
+                            Supprimé
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+}*@
+@code {
+    protected List<facture> factureList = null;
+    protected List<facture> searchfactureData = new();
+    protected facture facture = new();
+    protected string SearchString { get; set; } = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        await Getfacture();
+    }
+    protected async Task Getfacture()
+    {
+        factureList = await Http.GetFromJsonAsync<List<facture>>("api/factures");
+        searchfactureData = factureList;
+    }
+    protected void Filterfacture()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            factureList = searchfactureData
+                .Where(x => x.Designation.IndexOf(SearchString, StringComparison.OrdinalIgnoreCase) != -1)
+                .ToList();
+        }
+        else
+        {
+            factureList = searchfactureData;
+        }
+    }
+    protected void DeleteConfirm(Guid factureID)
+    {
+        facture = factureList.FirstOrDefault(x => x.Id == factureID);
+    }
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        factureList = searchfactureData;
+    }
+}

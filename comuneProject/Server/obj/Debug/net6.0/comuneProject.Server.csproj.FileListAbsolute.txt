@@ -1,0 +1,8 @@
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.csproj.AssemblyReference.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.GeneratedMSBuildEditorConfig.editorconfig
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.AssemblyInfoInputs.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.AssemblyInfo.cs
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.csproj.CoreCompileInputs.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.MvcApplicationPartsAssemblyInfo.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.RazorAssemblyInfo.cache
+E:\workflow\BlazorProject\comuneProject\comuneProject\Server\obj\Debug\net6.0\comuneProject.Server.RazorAssemblyInfo.cs

@@ -1,0 +1,126 @@
+﻿@page "/beneficie/details"
+@using comuneProject.Shared.Models
+
+@inject HttpClient Http
+<h1>Bénéficie Details</h1>
+<p>Blazor CRUD operation</p>
+<div class="row">
+    <div class="col-md-6">
+        <a href='/beneficie/add' class="btn btn-primary" role="button">
+            <i class="fas fa-beneficie-plus"></i>
+            Ajouté un beneficie
+        </a>
+    </div>
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Recherche par le Nom de bénéficie"
+               @bind="SearchString" @bind:event="oninput" @onkeyup="Filterbeneficie" />
+        @if (SearchString.Length > 0)
+        {
+        <div class="input-group-append">
+            <button class="btn btn-danger" @onclick="ResetSearch">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        }
+    </div>
+</div>
+<br />
+@*<style>
+    .e-spinner-pane .e-spinner-inner .e-spin-bootstrap4 {
+        stroke: red;
+    }
+</style>*@
+@if (beneficieList == null)
+{
+    <SfSpinner Visible="true" Label="Loading Data ..." Size="50"  ></SfSpinner>
+@*<div class="spinner"></div>*@
+}
+else
+{
+<SfGrid DataSource="@beneficieList" AllowPaging="true" AllowSorting="true">
+    @*AllowMultiSorting="false"*@
+    <GridSortSettings AllowUnsort="false">
+        <GridSortColumns>
+            <GridSortColumn Field="Name" Direction="SortDirection.Descending"></GridSortColumn>
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridPageSettings PageSize="5" PageSizes="true" PageCount="3"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field="@nameof(@beneficie.Id)" AllowSorting="false" HeaderText="ID"></GridColumn>
+        <GridColumn Field="@nameof(@beneficie.Name)" HeaderText="Name"></GridColumn>
+        <GridColumn Field="@nameof(@beneficie.Post)" HeaderText="Post"></GridColumn>
+
+    </GridColumns>
+</SfGrid>
+@*<table class="table table-striped align-middle table-bordered">
+    <thead class="table-success">
+        <tr>
+            <th hidden>ID</th>
+            <th>Nom de beneficie</th>
+            <th>Occupation</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var beneficie in beneficieList)
+        {
+
+        <tr>
+            <td hidden>@beneficie.Id</td>
+            <td>@beneficie.Name</td>
+            <td>@beneficie.Post</td>
+
+            
+
+            <td>
+                <a href='/beneficie/edit/@beneficie.Id' class="btn btn-outline-dark" role="button">
+                    Modifié
+                </a>
+                <a href='/beneficie/delete/@beneficie.Id' class="btn btn-outline-danger" role="button">
+                    Supprimé
+                </a>
+            </td>
+        </tr>
+        }
+    </tbody>
+
+</table>*@
+}
+@code {
+    protected List<beneficie>
+    beneficieList = null;
+    protected List<beneficie>
+        searchbeneficieData = new();
+        protected beneficie beneficie = new();
+        protected string SearchString { get; set; } = string.Empty;
+        protected override async Task OnInitializedAsync()
+        {
+        await Getbeneficie();
+        }
+        protected async Task Getbeneficie()
+        {
+        beneficieList = await Http.GetFromJsonAsync<List<beneficie>>("api/beneficies");
+        searchbeneficieData = beneficieList;
+    }
+    protected void Filterbeneficie()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            beneficieList = searchbeneficieData
+                .Where(x => x.Name.IndexOf(SearchString, StringComparison.OrdinalIgnoreCase) != -1)
+                .ToList();
+        }
+        else
+        {
+            beneficieList = searchbeneficieData;
+        }
+    }
+    protected void DeleteConfirm(Guid beneficieID)
+    {
+        beneficie = beneficieList.FirstOrDefault(x => x.Id == beneficieID);
+    }
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        beneficieList = searchbeneficieData;
+    }
+}
